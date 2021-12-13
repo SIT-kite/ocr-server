@@ -1,4 +1,4 @@
-POST http://localhost:5000/recognition
+POST http://localhost:5000/captcha/recognition
 Content-Type: text/plain
 
 /9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a

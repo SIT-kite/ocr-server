@@ -7,8 +7,12 @@ ocr = ddddocr.DdddOcr()
 app = Flask(__name__)
 
 
-@app.route('/recognition', methods=['POST'])
-def recognition() -> str:
+@app.route('/captcha/recognition', methods=['POST'])
+def captcha_recognition() -> str:
+    """
+    验证码识别
+    :return: 识别结果
+    """
     try:
         return json.dumps({
             'code': 0,

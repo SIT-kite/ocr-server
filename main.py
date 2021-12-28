@@ -1,14 +1,22 @@
+import base64
 import json
+import numpy as np
 import ddddocr
+from PIL import Image
+from io import BytesIO
+import flask
 from typing import *
-from flask import Flask, request
+from paddleocr import PaddleOCR
 
 
 # Initialize DdddOcr library (load model)
-ocr = ddddocr.DdddOcr()
+ocr_captcha = ddddocr.DdddOcr()
+
+# Initialize PaddleOCR library (download and load model)
+ocr_text = PaddleOCR(use_angle_cls=True, lang="ch")
 
 # Create flask app object
-app = Flask('kite-ocr-server')
+app = flask.Flask('kite-ocr-server')
 
 
 class ResponseBody(NamedTuple):
@@ -25,10 +33,7 @@ class ResponseBody(NamedTuple):
         """
         Create a success response.
         """
-        return ResponseBody(
-            code=0,
-            data=data
-        )
+        return ResponseBody(code=0, msg=None, data=data)
 
     @staticmethod
     def failure(code: int, msg: str):
@@ -49,32 +54,69 @@ class ResponseBody(NamedTuple):
             return json.dumps({'code': self.code, 'msg': self.msg})
 
 
+def preprocess_captcha(captcha: Image, threshold: int = 130) -> Image:
+    """
+    Convert captcha image to binary image with a given threshold.
+    The default threshold is 130.
+    """
+    orignal_image = captcha
+
+    # Convert to grey level image 
+    image_in_grey  =  orignal_image.convert("L")
+
+    # Setup a converting table with constant threshold
+    threshold = 128 if threshold >= 255 or threshold < 0 else threshold
+    mapping_table  =  [0] * threshold + [1] * (256 - threshold)
+
+    # Convert to binary image by the table 
+    binary_image = image_in_grey.point(mapping_table, '1')
+    return binary_image
+
+
+
 #####################################
 # OCR service handlers.
 #####################################
 
 @app.route('/ocr/captcha', methods=['POST'])
-def captcha_recognition() -> str:
+def recognize_captcha() -> str:
     """
     Do captcha recognition by DdddOcr library.
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
     If the captcha is not recognized, return code 1 instead.
     """
 
-    captcha_in_base64 = request.get_data(as_text=True)
+    captcha_in_base64 = flask.request.get_data(as_text=True)
     response: ResponseBody
 
     try:
         # Use DdddOcr to recognize
-        response = ocr.classification(img_base64=captcha_in_base64)
+        result = ocr_captcha.classification(img_base64=captcha_in_base64)
+        response = ResponseBody.success(result)
     except Exception as e:
-        response = ResponseBody(
-            code=1,
-            msg=str(e),
-        )
-        response = response.to_json()
-    
-    return response
+        response = ResponseBody.failure(1, str(e))
+
+    return response.to_json()
+
+
+@app.route('/ocr/text', methods=['POST'])
+def recognize_text() -> str:
+    """
+    Do text recognition by PaddleOCR library.
+    :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
+    If the text is not recognized, return code 1 instead.
+    """
+    # TODO: Optimize these lines.
+    image_in_base64: str = flask.request.get_data(as_text=True)
+    image_bytes: bytes = base64.b64decode(image_in_base64)
+    image_bytes: BytesIO = BytesIO(image_bytes)
+    image: Image = Image.open(image_bytes)
+
+    result = ocr_text.ocr(np.array(image), cls=True, det=False)
+    # for line in result:
+    #     print(line)
+
+    return ResponseBody.success(result).to_json()
 
 
 # Entry point

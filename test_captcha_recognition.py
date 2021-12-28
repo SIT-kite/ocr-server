@@ -13,4 +13,6 @@ def test_captcha_recognition():
         response = requests.post(
             url='http://localhost:5000/captcha/recognition',
             data=base64_result)
-        assert response.json()['result'] == '64f6dc'
+        assert response.json()['data']['captcha'] == '64f6dc'
+
+test_captcha_recognition()

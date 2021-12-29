@@ -19,6 +19,9 @@ cd ./ocr-server
 pipenv install
 ```
 
+使用命令`pipenv shell`可进入该虚拟环境
+使用`python main.py`可运行该项目
+
 ### 使用 pip
 
 你也可以直接使用以下命令安装依赖：
@@ -58,4 +61,14 @@ pip3 install -i requirements.txt
         "text2"
     ]
 }
+```
+
+## 常见问题
+
+### Python.h 找不到
+fatal error: Python.h: No such file or directory
+linux环境中, 安装过程中可能会报错#include <Python.h>找不到
+使用以下命令安装Python开发依赖
+```bash
+sudo apt install python3-dev
 ```

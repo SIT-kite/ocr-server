@@ -2,24 +2,26 @@
 
 该服务用于为上应小风筝提供验证码和文本识别功能。Web 服务框架使用了 flask 框架，验证码识别使用了国内的 ddddocr 库。Python 语言中可以很方便地调用相关功能的库。
 
-## pipenv 包管理器
+
+
+## 安装
+
+### 使用 pipenv
 
 本项目使用 pipenv 进行虚拟环境隔离与依赖管理，请确保系统中存在`pipenv`命令，若不存在，使用以下命令安装
 ```bash
 pip3 install pipenv
 ```
 
-第一次使用时，先为本项目创建虚拟 Python 隔离环境,
+可执行以下命令创建虚拟环境并安装所需依赖
 ```bash
 cd ./ocr-server
 pipenv install
 ```
 
+### 使用 pip
 
-
-## 安装
-
-你可以使用以下命令安装依赖：
+你也可以直接使用以下命令安装依赖：
 ```bash
 cd ./ocr-server
 pip3 install -i requirements.txt

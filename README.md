@@ -38,7 +38,7 @@ pip3 install -i requirements.txt
     "code": 0,
     "data": [
         "text1",
-        "text2
+        "text2"
     ]
 }
 ```

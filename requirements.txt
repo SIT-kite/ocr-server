@@ -1,0 +1,6 @@
+numpy
+pillow
+ddddocr
+flask
+paddleocr
+paddlepaddle

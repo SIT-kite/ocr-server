@@ -79,7 +79,7 @@ def preprocess_captcha(captcha: Image, threshold: int = 130) -> Image:
 #####################################
 
 @app.route('/ocr/captcha', methods=['POST'])
-def recognize_captcha() -> str:
+def recognize_captcha():
     """
     Do captcha recognition by DdddOcr library.
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
@@ -96,11 +96,11 @@ def recognize_captcha() -> str:
     except Exception as e:
         response = ResponseBody.failure(1, str(e))
 
-    return response.to_json()
+    return response.to_json(), 200, {"Content-Type":"application/json"}
 
 
 @app.route('/ocr/text', methods=['POST'])
-def recognize_text() -> str:
+def recognize_text():
     """
     Do text recognition by PaddleOCR library.
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
@@ -116,7 +116,7 @@ def recognize_text() -> str:
     # for line in result:
     #     print(line)
 
-    return ResponseBody.success(result).to_json()
+    return ResponseBody.success(result).to_json(), 200, {"Content-Type":"application/json"}
 
 
 # Entry point

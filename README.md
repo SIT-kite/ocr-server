@@ -2,8 +2,6 @@
 
 该服务用于为上应小风筝提供验证码和文本识别功能。Web 服务框架使用了 flask 框架，验证码识别使用了国内的 ddddocr 库。Python 语言中可以很方便地调用相关功能的库。
 
-
-
 ## 安装
 
 ### 使用 pipenv
@@ -33,6 +31,16 @@ pip3 install -i requirements.txt
 
 
 ## 使用
+
+### 安装
+
+Uwsgi 方式运行：
+
+```bash
+uwsgi -c ./uwsgi.ini
+```
+
+### 调用
 
 我们提供了两个 API，负责验证码识别和文本识别。两个接口均需在 HTTP request 中的 body 需要传入直接 base64 处理后的图片，具体请求格式可以参考 [test_recognition.http](./test_recognition.http) 文件和测试脚本 [test_recognition.py](./test_recognition.py)。
 
@@ -65,6 +73,7 @@ pip3 install -i requirements.txt
 
 ## 常见问题
 
+### 
 ### Python.h 找不到
 fatal error: Python.h: No such file or directory
 linux环境中, 安装过程中可能会报错#include <Python.h>找不到

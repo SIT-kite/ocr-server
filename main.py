@@ -9,10 +9,10 @@ from typing import *
 
 
 # Initialize DdddOcr library (load model)
-ocr_captcha: Optional[ddddocr.DdddOcr] = None
+ocr_captcha = None
 
 # Initialize PaddleOCR library (download and load model)
-ocr_text: Optional:[PaddleOCR] = None
+ocr_text = None
 
 # Create flask app object
 app = flask.Flask('kite-ocr-server')
@@ -84,6 +84,7 @@ def recognize_captcha():
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
     If the captcha is not recognized, return code 1 instead.
     """
+    global ocr_captcha
     if ocr_captcha is None:
         import ddddocr
         ocr_captcha = ddddocr.DdddOcr()
@@ -94,7 +95,8 @@ def recognize_captcha():
 
     try:
         # Use DdddOcr to recognize
-        result = ocr_captcha.classification(img_base64=captcha_in_base64)
+        img = base64.b64decode(captcha_in_base64.encode('ascii'))
+        result = ocr_captcha.classification(img)
         response = ResponseBody.success(result)
     except Exception as e:
         response = ResponseBody.failure(1, str(e))
@@ -109,6 +111,7 @@ def recognize_text():
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
     If the text is not recognized, return code 1 instead.
     """
+    global ocr_text
     if ocr_text is None:
         from paddleocr import PaddleOCR
         ocr_text = PaddleOCR(use_angle_cls=True, lang="ch")

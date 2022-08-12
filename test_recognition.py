@@ -6,7 +6,7 @@ def test_captcha_recognition():
     """ 测试验证码识别服务 """
     with open('test_captcha.jpeg', 'rb') as f:
         base64_result = base64.b64encode(f.read()).decode()
-
+    
     response = requests.post(url='http://localhost:5000/ocr/captcha', data=base64_result)
     response.raise_for_status()
 

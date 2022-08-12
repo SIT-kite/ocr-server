@@ -1,19 +1,18 @@
 import base64
 import json
 import numpy as np
-import ddddocr
 from PIL import Image
 from io import BytesIO
 import flask
 from typing import *
-from paddleocr import PaddleOCR
+
 
 
 # Initialize DdddOcr library (load model)
-ocr_captcha = ddddocr.DdddOcr()
+ocr_captcha: Optional[ddddocr.DdddOcr] = None
 
 # Initialize PaddleOCR library (download and load model)
-ocr_text = PaddleOCR(use_angle_cls=True, lang="ch")
+ocr_text: Optional:[PaddleOCR] = None
 
 # Create flask app object
 app = flask.Flask('kite-ocr-server')
@@ -85,6 +84,10 @@ def recognize_captcha():
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
     If the captcha is not recognized, return code 1 instead.
     """
+    if ocr_captcha is None:
+        import ddddocr
+        ocr_captcha = ddddocr.DdddOcr()
+        
 
     captcha_in_base64 = flask.request.get_data(as_text=True)
     response: ResponseBody
@@ -106,6 +109,9 @@ def recognize_text():
     :return: A json in plain text of a ResponseBody object, wtih data field is the result in str.
     If the text is not recognized, return code 1 instead.
     """
+    if ocr_text is None:
+        from paddleocr import PaddleOCR
+        ocr_text = PaddleOCR(use_angle_cls=True, lang="ch")
     # TODO: Optimize these lines.
     image_in_base64: str = flask.request.get_data(as_text=True)
     image_bytes: bytes = base64.b64decode(image_in_base64)
